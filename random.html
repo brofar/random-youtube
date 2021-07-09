@@ -1,0 +1,93 @@
+<script>
+/*
+	Add your youtube video IDs below, then in OBS create a new browser source, check the "local file" box, then browse for this file.
+*/
+// Add video ids here (array of strings)
+const videos = [
+'7ZguAEoNpZw',
+'WBYsMkyoS58'
+];
+</script>
+<div id="main">
+    <div id="player"></div>
+</div>
+
+    <script src="http://www.youtube.com/player_api"></script>
+
+    <script>
+
+        // create youtube player
+        var player;
+		var playerId = 'player';
+		
+        function onYouTubePlayerAPIReady() {
+			// Destroy player object
+			player = null;
+			
+			// Remove the div
+			removeElement(playerId);
+			
+			// Create a new name for the new player
+			playerId = generateRandomName();
+			
+			// Get random video ID
+			var vid = getRandom(videos);
+			
+			// Create the video
+			createVideo(vid, playerId);
+        }
+
+        // autoplay video
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+        // when video ends
+        function onPlayerStateChange(event) {        
+            if(event.data === 0) {          
+				onYouTubePlayerAPIReady();
+            }
+        }
+
+		function getRandom(array) {
+			return array[Math.floor(Math.random() * array.length)];
+		}
+
+		function createVideo(vidId, playerId) {
+			addElement('main', 'div', playerId, '');
+            player = new YT.Player(playerId, {
+              width: '640',
+              height: '390',
+              videoId: vidId,
+              events: {
+                onReady: onPlayerReady,
+                onStateChange: onPlayerStateChange
+              }
+            });
+		}
+		
+		function addElement(parentId, elementTag, elementId, html) {
+			// Adds an element to the document
+			var p = document.getElementById(parentId);
+			var newElement = document.createElement(elementTag);
+			newElement.setAttribute('id', elementId);
+			newElement.innerHTML = html;
+			p.appendChild(newElement);
+		}
+
+		function removeElement(elementId) {
+			// Removes an element from the document
+			var element = document.getElementById(elementId);
+			element.parentNode.removeChild(element);
+		}
+		
+		function generateRandomName() {
+			var length = 8,
+				charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+				retVal = "";
+			for (var i = 0, n = charset.length; i < length; ++i) {
+				retVal += charset.charAt(Math.floor(Math.random() * n));
+			}
+			return retVal;
+		}
+    </script>
